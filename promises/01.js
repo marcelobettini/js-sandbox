@@ -1,8 +1,6 @@
 import { sleep } from './sleep.js';
 
 async function getDataFromApi() {
-    let loading = true;
-
     try {
         console.log("Cargando datos...");
         await sleep(1300);
@@ -17,15 +15,15 @@ async function getDataFromApi() {
         return users;
     } catch (err) {
         console.error(err.message);
-    } finally {
-        loading = false;
     }
 }
 
-const users = await getDataFromApi();
-if (users !== undefined) {
-    console.clear();
-    users.forEach((usr) => {
-        console.log(`${usr.id} ${usr.name}`);
-    });
+export async function run() {
+    const users = await getDataFromApi();
+    if (users !== undefined) {
+        console.clear();
+        users.forEach((usr) => {
+            console.log(`${usr.id} ${usr.name}`);
+        });
+    }
 }

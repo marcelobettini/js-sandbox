@@ -29,5 +29,7 @@ async function getUsersWithPosts() {
     }));
 }
 
-const data = await getUsersWithPosts();
-data.forEach(item => console.log(item));
+export async function run() {
+    const data = await getUsersWithPosts();
+    data.forEach(item => console.log(item));
+}

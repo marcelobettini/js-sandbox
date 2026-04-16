@@ -1,19 +1,19 @@
 import { sleep } from "./sleep.js";
 
-async function fetchJson(url, signal) {
-    const res = await fetch(url, { signal });
+async function fetchJson(url) {
+    const res = await fetch(url);
     if (!res.ok) {
         throw new Error(`HTTP ${res.status} - ${url}`);
     }
     return res.json();
 }
 
-async function getUsersWithPosts({ signal } = {}) {
+async function getUsersWithPosts() {
     await sleep(1300);
 
     const [users, posts] = await Promise.all([
-        fetchJson("https://jsonplaceholder.typicode.com/users", signal),
-        fetchJson("https://jsonplaceholder.typicode.com/posts", signal)
+        fetchJson("https://jsonplaceholder.typicode.com/users"),
+        fetchJson("https://jsonplaceholder.typicode.com/posts")
     ]);
 
     // join eficiente

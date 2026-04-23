@@ -99,3 +99,32 @@ ___Aquí la explicación de los que ves en pantalla:___
 - Intente resolver el problema. Tenga en cuenta que cuando no existe el valor, la propiedad ==gini== es un objeto vacío. En ese caso, una buena solución sería que el objeto resultante quedara más o menos así: `{name: "Cuba", gini: null}`
 
 - Para lograr eso, dentro de un bucle, podemos crear cada objeto poniendo en el campo ==name== el valor que traigan los datos y en el campo ==gini==, primero chequear si el objeto está vacío, en cuyo caso pondremos como valor `null`. Si no es un objeto vacío simplemente propagaremos el valor que traiga ese campo.
+
+```js
+[
+  { name: 'Spain', gini: 34.7 },
+  { name: 'El Salvador', gini: 38.8 },
+  { name: 'Uruguay', gini: 39.7 },
+  { name: 'Peru', gini: 41.5 },
+  { name: 'Bolivia', gini: 41.6 },
+  { name: 'Dominican Republic', gini: 41.9 },
+  { name: 'Argentina', gini: 42.9 },
+  { name: 'Chile', gini: 44.4 },
+  { name: 'Venezuela', gini: 44.8 },
+  { name: 'Mexico', gini: 45.4 },
+  { name: 'Ecuador', gini: 45.7 },
+  { name: 'Paraguay', gini: 45.7 },
+  { name: 'Nicaragua', gini: 46.2 },
+  { name: 'Costa Rica', gini: 48.2 },
+  { name: 'Honduras', gini: 48.2 },
+  { name: 'Guatemala', gini: 48.3 },
+  { name: 'Panama', gini: 49.8 },
+  { name: 'Colombia', gini: 51.3 },
+  { name: 'Belize', gini: 53.3 },
+  { name: 'Guam', gini: 'N/A' },
+  { name: 'Puerto Rico', gini: 'N/A' },
+  { name: 'Western Sahara', gini: 'N/A' },
+  { name: 'Equatorial Guinea', gini: 'N/A' },
+  { name: 'Cuba', gini: 'N/A' }
+]
+```

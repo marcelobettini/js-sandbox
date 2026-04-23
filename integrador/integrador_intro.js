@@ -3,26 +3,26 @@ console.log(res);
 const data = await res.json();
 console.log(data);
 
-// const transformed = data.map(el => ({
-//     name: el.name.common,
-//     // Extraemos el primer valor y lo aseguramos como número
-//     gini: el.gini && Object.keys(el.gini).length > 0
-//         ? Object.values(el.gini)[0]
-//         : 'N/A'
-// }));
+const transformed = data.map(el => ({
+    name: el.name.common,
+    // Extraemos el primer valor y lo aseguramos como número
+    gini: el.gini && Object.keys(el.gini).length > 0
+        ? Object.values(el.gini)[0]
+        : 'N/A'
+}));
 
-// const sortedByGini = transformed.toSorted((a, b) => {
-//     // Si ambos son null, se mantienen igual
-//     if (a.gini === b.gini) return 0;
-//     // Si 'a' es null, lo mandamos al final
-//     if (a.gini === 'N/A') return 1;
-//     // Si 'b' es null, lo mandamos al final
-//     if (b.gini === 'N/A') return -1;
-//     // Resta numérica estándar
-//     return a.gini - b.gini;
-// });
+const sortedByGini = transformed.toSorted((a, b) => {
+    // Si ambos son null, se mantienen igual
+    if (a.gini === b.gini) return 0;
+    // Si 'a' es null, lo mandamos al final
+    if (a.gini === 'N/A') return 1;
+    // Si 'b' es null, lo mandamos al final
+    if (b.gini === 'N/A') return -1;
+    // Resta numérica estándar
+    return a.gini - b.gini;
+});
 
-// console.log(sortedByGini);
+console.log(sortedByGini);
 
 // //delay no bloqueante
 // const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))

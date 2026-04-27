@@ -1,0 +1,13 @@
+{
+  "name": "01-web",
+  "version": "0.0.1",
+  "description": "Web Server with raw Node JS: HTTP module",
+  "license": "ISC",
+  "author": "Marcelo Bettini",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

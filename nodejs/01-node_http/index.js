@@ -54,9 +54,22 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ status: 404, message: "Recipe Not Found" }));
             }
             break;
-        default:
-            res.writeHead(404, { "Content-Type": "text/plain" });
-            res.end("404 - Route Not Found");
+        default: {
+            const match = url.pathname.match(/^\/recipes\/(\d+)$/);
+            if (match) {
+                const recipe = data.recipes.find(r => r.id === Number(match[1]));
+                if (recipe) {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify(recipe));
+                } else {
+                    res.writeHead(404, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ status: 404, message: "Recipe Not Found" }));
+                }
+            } else {
+                res.writeHead(404, { "Content-Type": "text/plain" });
+                res.end("404 - Route Not Found");
+            }
+        }
 
     }
 });

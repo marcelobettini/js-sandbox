@@ -34,6 +34,11 @@ server.get('/recipes/search', (req, res) => {
 });
 
 
+server.get('/recipes/:id', (req, res) => {
+    const recipe = data.recipes.find(r => r.id === Number(req.params.id));
+    recipe ? res.json(recipe) : res.status(404).json({ status: 404, message: "Recipe Not Found" });
+});
+
 server.use((req, res) => {
     res.status(404).json({ status: 404, message: 'Invalid Route' });
 });

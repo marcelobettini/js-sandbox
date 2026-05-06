@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
       'GET    /tasks/:id': 'Obtiene una tarea por id',
       'POST   /tasks': 'Crea una nueva tarea',
       'PATCH  /tasks/:id': 'Actualiza una tarea parcialmente',
+      'PATCH  /tasks/:id/toggle': 'Invierte el estado completed de una tarea',
       'DELETE /tasks/:id': 'Elimina una tarea',
     },
   });

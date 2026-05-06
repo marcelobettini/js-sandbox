@@ -112,6 +112,22 @@ router.patch('/:id', (req, res) => {
   res.json(updated);
 });
 
+// PATCH /tasks/:id/toggle → invierte el campo completed (true ↔ false)
+// No requiere body: el nuevo valor se calcula a partir del estado actual.
+router.patch('/:id/toggle', (req, res) => {
+  const task = store.getById(req.params.id);
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+
+  const updated = store.update(req.params.id, {
+    completed: !task.completed,
+    updatedAt: new Date().toISOString(),
+  });
+
+  res.json(updated);
+});
+
 // DELETE /tasks/:id → elimina una tarea
 router.delete('/:id', (req, res) => {
   const deleted = store.remove(req.params.id);

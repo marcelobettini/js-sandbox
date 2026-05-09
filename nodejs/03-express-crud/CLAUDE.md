@@ -8,15 +8,15 @@ Educational REST API — Todo App CRUD built with Node.js and Express. Full requ
 
 ## Stack
 
-- **Runtime**: Node.js with ES6+ (CommonJS or ESM — to be decided)
-- **Framework**: Express.js v5
+- **Runtime**: Node.js with ES6+ (import instead of require)
+- **Framework**: Express.js latest version
 - **Persistence**: JSON file (no database)
 - **UUID generation**: Node.js native `crypto.randomUUID()`
 
 ## Commands
 
 ```bash
-node src/index.js        # start the server
+node --watch src/index.js        # start the server in dev mode
 ```
 
 No test runner or linter configured.

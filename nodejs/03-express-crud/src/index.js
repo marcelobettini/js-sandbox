@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Parsea el body de las requests como JSON
+
 app.use(express.json());
 
 const API_PREFIX = '/api/v1';

@@ -55,6 +55,19 @@ const server = http.createServer((req, res) => {
             }
             break;
         default: {
+            // .match() devuelve un array o null. Si hay match, el array es:
+            //   [0] → el string completo que coincidió  →  "/recipes/42"
+            //   [1] → primer grupo de captura ( \d+ )   →  "42"  ← el id
+            // Por eso match[1] y no match[0].
+            //
+            // La regex /^\/recipes\/(\d+)$/ se lee así:
+            //   ^           → inicio del string
+            //   \/recipes\/ → literal "/recipes/"
+            //   (\d+)       → grupo de captura: uno o más dígitos (el id)
+            //   $           → fin del string
+            //
+            // "/recipes/42"  → match[1] === "42"
+            // "/recipes/abc" → null
             const match = url.pathname.match(/^\/recipes\/(\d+)$/);
             if (match) {
                 const recipe = data.recipes.find(r => r.id === Number(match[1]));

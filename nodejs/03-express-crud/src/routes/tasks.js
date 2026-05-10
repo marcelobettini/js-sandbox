@@ -33,8 +33,12 @@ router.get('/', (req, res) => {
         t.description.toLowerCase().includes(keyword)
     );
   }
+  if (tasks.length) {
+    res.json(tasks);
 
-  res.json(tasks);
+  } else {
+    res.status(404).json({ error: 'Task not found' });
+  }
 });
 
 // ─── PATCH /api/v1/tasks/:id/toggle ──────────────────────────────────────────

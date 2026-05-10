@@ -31,15 +31,26 @@ app.get(API_PREFIX, (req, res) => {
 // Monta el router de tareas bajo el prefijo /api/v1
 app.use(`${API_PREFIX}/tasks`, tasksRouter);
 
-// 404 para rutas no definidas
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// 404 — rutas no definidas
+app.use((req, res, next) => {
+  const error = new Error('Route not found');
+  error.status = 404;
+  next(error); // delega al error handler global
 });
 
-// Manejador global de errores (4 parámetros = Express lo reconoce como error handler)
+// Error handler global
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error' });
+
+  const status = err.status || err.statusCode || 500;
+  //Por qué usamos las props status o statusCode?
+  //Es para garantizar compatibilidad con distintos tipos de errores: algunos frameworks o librerías (como http-errors) usan err.status, mientras que otros (como los errores nativos de Node) podrían usar err.statusCode. Al verificar ambos, nos aseguramos de capturar el código de estado correcto sin importar el origen del error. Es un seguro barato para mejorar la robustez de nuestro error handling. Programación Defensiva 101: anticipar variaciones en los objetos de error que podríamos recibir.
+  //
+
+  const message = status < 500 ? err.message : 'Internal server error';
+  //                              ↑ no exponer detalles internos en errores 5xx
+
+  res.status(status).json({ error: message });
 });
 
 app.listen(PORT, () => {

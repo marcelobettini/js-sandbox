@@ -18,21 +18,12 @@ app.get(API_PREFIX, (req, res) => {
     name: 'Todo API',
     version: '1.0.0',
     endpoints: {
-<<<<<<< HEAD
-      'GET    /tasks': 'Lista todas las tareas (filtra con ?completed=true|false o ?search=keyword)',
-      'GET    /tasks/:id': 'Obtiene una tarea por id',
-      'POST   /tasks': 'Crea una nueva tarea',
-      'PATCH  /tasks/:id': 'Actualiza una tarea parcialmente',
-      'PATCH  /tasks/:id/toggle': 'Invierte el estado completed de una tarea',
-      'DELETE /tasks/:id': 'Elimina una tarea',
-=======
       [`GET    ${API_PREFIX}/tasks`]: 'Lista todas las tareas (filtra con ?completed=true|false o ?search=keyword)',
       [`GET    ${API_PREFIX}/tasks/:id`]: 'Obtiene una tarea por id',
       [`POST   ${API_PREFIX}/tasks`]: 'Crea una nueva tarea',
       [`PATCH  ${API_PREFIX}/tasks/:id`]: 'Actualiza una tarea parcialmente',
       [`PATCH  ${API_PREFIX}/tasks/:id/toggle`]: 'Invierte el estado completed de una tarea',
       [`DELETE ${API_PREFIX}/tasks/:id`]: 'Elimina una tarea',
->>>>>>> skeleton
     },
   });
 });

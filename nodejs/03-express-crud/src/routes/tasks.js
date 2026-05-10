@@ -25,7 +25,6 @@ router.patch('/:id', (req, res) => {
   res.json({ message: `Se actualizará parcialmente la tarea con id: ${req.params.id}` });
 });
 
-<<<<<<< HEAD
 // PATCH /tasks/:id/toggle → invierte el campo completed (true ↔ false)
 // No requiere body: el nuevo valor se calcula a partir del estado actual.
 router.patch('/:id/toggle', (req, res) => {
@@ -43,15 +42,6 @@ router.patch('/:id/toggle', (req, res) => {
 });
 
 // DELETE /tasks/:id → elimina una tarea
-=======
-// PATCH /api/v1/tasks/:id/toggle
-// Invierte el campo completed (true → false, false → true) sin necesitar el estado actual en el body
-router.patch('/:id/toggle', (req, res) => {
-  res.json({ message: `Se invertirá el estado completed de la tarea con id: ${req.params.id}` });
-});
-
-// DELETE /api/v1/tasks/:id
->>>>>>> skeleton
 router.delete('/:id', (req, res) => {
   res.json({ message: `Se eliminará la tarea con id: ${req.params.id}` });
 });

@@ -105,6 +105,15 @@ function update(id, fields) {
   if (index === -1) return null;
 
   tasks[index] = { ...tasks[index], ...fields };
+  /*
+  Qué hace la línea anterior, paso a paso:
+  1. tasks[index] → obtiene la tarea original a actualizar
+  2. { ...tasks[index] } → crea una copia superficial de la tarea original
+  3. { ...tasks[index], ...fields } → mezcla la copia con los nuevos campos, sobrescribiendo los existentes
+  4. tasks[index] = ... → asigna la tarea actualizada de vuelta al array en memoria
+
+  Esto asegura que solo se actualicen los campos especificados en "fields", sin perder los demás.
+  */
 
   // Capturamos la tarea antes de llamar a persist(), porque persist() invoca load(),
   // que reasigna tasks desde el archivo. Después de eso, el índice sigue siendo válido

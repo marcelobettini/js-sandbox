@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "description": "Integrador sobre API REST con Express. Recurso: Localidades de la Provincia de Buenos Aires",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "dev": "node --watch src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Marcelo Bettini",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }

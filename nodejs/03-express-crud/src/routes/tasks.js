@@ -1,126 +1,55 @@
 // Router de tareas: define todos los endpoints del CRUD.
-// Usa query params para filtrar: ?completed=true|false y ?search=keyword
 
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import * as store from '../db/fileStore.js';
+import { getAll, getById, add, update, remove } from '../db/fileStore.js';
 
 const router = Router();
 
+// Valores válidos para el campo priority
 const VALID_PRIORITIES = ['low', 'mid', 'high'];
 
-// GET /tasks
-// Sin query params: devuelve todas las tareas.
-// ?completed=true|false → filtra por estado de completitud.
-// ?search=keyword       → busca por palabra clave en título o descripción.
+// ─── GET /api/v1/tasks ────────────────────────────────────────────────────────
+// Lista todas las tareas. Acepta dos query params opcionales que se pueden
+// combinar entre sí:
+//   ?completed=true|false  →  filtra por estado de completitud
+//   ?search=keyword        →  busca la keyword en título o descripción (case-insensitive)
 router.get('/', (req, res) => {
-  let result = store.getAll();
+  let tasks = getAll();
 
   const { completed, search } = req.query;
 
-  // Filtro por estado
   if (completed !== undefined) {
-    const flag = completed === 'true';
-    result = result.filter((t) => t.completed === flag);
+    // req.query siempre llega como string; comparamos contra 'true' explícitamente
+    const isCompleted = completed === 'true';
+    tasks = tasks.filter((t) => t.completed === isCompleted);
   }
 
-  // Filtro por búsqueda (case-insensitive)
   if (search) {
     const keyword = search.toLowerCase();
-    result = result.filter(
+    tasks = tasks.filter(
       (t) =>
         t.title.toLowerCase().includes(keyword) ||
         t.description.toLowerCase().includes(keyword)
     );
   }
+  if (tasks.length) {
+    res.json(tasks);
 
-  res.json(result);
+  } else {
+    res.status(404).json({ error: 'Task not found' });
+  }
 });
 
-// GET /tasks/:id → devuelve una tarea por su id
-router.get('/:id', (req, res) => {
-  const task = store.getById(req.params.id);
-  if (!task) {
-    return res.status(404).json({ error: 'Task not found' });
-  }
-  res.json(task);
-});
-
-// POST /tasks → crea una nueva tarea
-router.post('/', (req, res) => {
-  const { title, description, priority } = req.body;
-
-  if (!title || !description) {
-    return res.status(400).json({ error: 'title and description are required' });
-  }
-
-  if (priority && !VALID_PRIORITIES.includes(priority)) {
-    return res.status(400).json({ error: 'priority must be low, mid, or high' });
-  }
-
-  const now = new Date().toISOString();
-  const task = {
-    id: randomUUID(),
-    title,
-    description,
-    priority: priority ?? 'mid',
-    completed: false,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  store.add(task);
-  res.status(201).json(task);
-});
-
-// PATCH /tasks/:id → actualización parcial de una tarea
-router.patch('/:id', (req, res) => {
-  const task = store.getById(req.params.id);
-  if (!task) {
-    return res.status(404).json({ error: 'Task not found' });
-  }
-
-  const { title, description, priority, completed } = req.body;
-
-  if (priority !== undefined && !VALID_PRIORITIES.includes(priority)) {
-    return res.status(400).json({ error: 'priority must be low, mid, or high' });
-  }
-
-  if (completed !== undefined && typeof completed !== 'boolean') {
-    return res.status(400).json({ error: 'completed must be a boolean' });
-  }
-
-  // Construye el objeto solo con los campos que vienen en el body.
-  const updates = { updatedAt: new Date().toISOString() };
-
-  if (title !== undefined) updates.title = title;
-  if (description !== undefined) updates.description = description;
-  if (priority !== undefined) updates.priority = priority;
-  if (completed !== undefined) updates.completed = completed;
-
-  // Versión compacta equivalente usando spread + short-circuit:
-  // ...(condición && { prop }) → spread de false no agrega nada; spread de { prop } sí.
-  // const updates = {
-  //   ...(title !== undefined && { title }),
-  //   ...(description !== undefined && { description }),
-  //   ...(priority !== undefined && { priority }),
-  //   ...(completed !== undefined && { completed }),
-  //   updatedAt: new Date().toISOString(),
-  // };
-
-  const updated = store.update(req.params.id, updates);
-  res.json(updated);
-});
-
-// PATCH /tasks/:id/toggle → invierte el campo completed (true ↔ false)
-// No requiere body: el nuevo valor se calcula a partir del estado actual.
+// ─── PATCH /api/v1/tasks/:id/toggle ──────────────────────────────────────────
+// Invierte el campo completed sin requerir body.
+// IMPORTANTE: debe declararse antes de PATCH /:id porque Express evalúa rutas
+// en orden de declaración y /:id capturaría '/uuid/toggle' si va primero.
 router.patch('/:id/toggle', (req, res) => {
-  const task = store.getById(req.params.id);
-  if (!task) {
-    return res.status(404).json({ error: 'Task not found' });
-  }
+  const task = getById(req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
 
-  const updated = store.update(req.params.id, {
+  const updated = update(req.params.id, {
     completed: !task.completed,
     updatedAt: new Date().toISOString(),
   });
@@ -128,13 +57,76 @@ router.patch('/:id/toggle', (req, res) => {
   res.json(updated);
 });
 
-// DELETE /tasks/:id → elimina una tarea
-router.delete('/:id', (req, res) => {
-  const deleted = store.remove(req.params.id);
-  if (!deleted) {
-    return res.status(404).json({ error: 'Task not found' });
+// ─── GET /api/v1/tasks/:id ────────────────────────────────────────────────────
+router.get('/:id', (req, res) => {
+  const task = getById(req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+  res.json(task);
+});
+
+// ─── POST /api/v1/tasks ───────────────────────────────────────────────────────
+// Crea una tarea nueva. Campos requeridos: title.
+// Campos opcionales con defaults: description (''), priority ('low'), completed (false).
+router.post('/', (req, res) => {
+  const { title, description = '', priority = 'low' } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: 'title is required' });
   }
-  // 204 No Content: éxito sin cuerpo de respuesta
+
+  if (!VALID_PRIORITIES.includes(priority)) {
+    return res
+      .status(400)
+      .json({ error: `priority must be one of: ${VALID_PRIORITIES.join(', ')}` });
+  }
+
+  const now = new Date().toISOString();
+  const task = {
+    id: randomUUID(),
+    title,
+    description,
+    priority,
+    completed: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  add(task);
+  res.status(201).json(task);
+});
+
+// ─── PATCH /api/v1/tasks/:id ──────────────────────────────────────────────────
+// Actualización parcial: solo se modifican los campos presentes en el body.
+// id, createdAt no son actualizables. updatedAt se renueva automáticamente.
+router.patch('/:id', (req, res) => {
+  const task = getById(req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+
+  const { title, description, priority, completed } = req.body;
+
+  if (priority !== undefined && !VALID_PRIORITIES.includes(priority)) {
+    return res
+      .status(400)
+      .json({ error: `priority must be one of: ${VALID_PRIORITIES.join(', ')}` });
+  }
+
+  // Construimos el objeto de cambios con solo los campos provistos
+  const fields = { updatedAt: new Date().toISOString() };
+  if (title !== undefined) fields.title = title;
+  if (description !== undefined) fields.description = description;
+  if (priority !== undefined) fields.priority = priority;
+  if (completed !== undefined) fields.completed = completed;
+
+  const updated = update(req.params.id, fields);
+  res.json(updated);
+});
+
+// ─── DELETE /api/v1/tasks/:id ─────────────────────────────────────────────────
+// 204 No Content es la respuesta estándar REST para un DELETE exitoso:
+// la operación fue exitosa y no hay cuerpo que devolver.
+router.delete('/:id', (req, res) => {
+  const removed = remove(req.params.id);
+  if (!removed) return res.status(404).json({ error: 'Task not found' });
   res.status(204).send();
 });
 

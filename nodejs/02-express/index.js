@@ -6,14 +6,14 @@ const server = express();
 server.disable("x-powered-by"); //security measure
 
 server.get('/', (req, res) => {
-    res.send('Hello World with Express JS, and an invalid status code');
+    res.status(404).send('Hello World with Express JS, and an invalid status code');
 });
 
 server.get('/about', (req, res) => {
     res.send("About Page");
 });
 server.get('/recipes', (req, res) => {
-    res.status(200).send(data.recipes);
+    res.send(data.recipes);
 });
 
 server.get('/recipes/search', (req, res) => {
@@ -42,6 +42,7 @@ server.get('/recipes/:id', (req, res) => {
 server.use((req, res) => {
     res.status(404).json({ status: 404, message: 'Invalid Route' });
 });
+
 
 server.listen(PORT, (err) => {
     console.log(err ? err.message : `Server running on http://localhost:${PORT}`);

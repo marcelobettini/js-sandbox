@@ -3,134 +3,134 @@
         "id": 1,
         "imagen": "🍌",
         "nombre": "Banana",
-        "importe": 220,
-        "stock": 500
+        "importe": 3200,
+        "stock": 1200
     },
     {
         "id": 2,
         "imagen": "🍏",
         "nombre": "Manzana Verde",
-        "importe": 270,
-        "stock": 450
+        "importe": 3800,
+        "stock": 850
     },
     {
         "id": 3,
         "imagen": "🥝",
         "nombre": "Kiwi",
-        "importe": 280,
-        "stock": 2350
+        "importe": 7500,
+        "stock": 300
     },
     {
         "id": 4,
         "imagen": "🍈",
         "nombre": "Melón",
-        "importe": 350,
-        "stock": 50
+        "importe": 4200,
+        "stock": 120
     },
     {
         "id": 5,
-        "imagen": "🍍",
+        "imagen": " Pineapple",
         "nombre": "Ananá",
-        "importe": 320,
-        "stock": 50
+        "importe": 5800,
+        "stock": 80
     },
     {
         "id": 6,
         "imagen": "🍅",
         "nombre": "Tomate",
-        "importe": 140,
-        "stock": 780
+        "importe": 2900,
+        "stock": 1500
     },
     {
         "id": 7,
         "imagen": "🥥",
         "nombre": "Coco",
-        "importe": 270,
-        "stock": 50
+        "importe": 6500,
+        "stock": 40
     },
     {
         "id": 8,
         "imagen": "🍉",
         "nombre": "Sandía",
-        "importe": 200,
-        "stock": 50
+        "importe": 3100,
+        "stock": 60
     },
     {
         "id": 9,
         "imagen": "🍑",
         "nombre": "Durazno",
-        "importe": 310,
-        "stock": 1900
+        "importe": 4800,
+        "stock": 250
     },
     {
         "id": 10,
         "imagen": "🫐",
         "nombre": "Arándano",
-        "importe": 650,
-        "stock": 500
+        "importe": 9500,
+        "stock": 180
     },
     {
         "id": 11,
         "imagen": "🥭",
         "nombre": "Mango",
-        "importe": 290,
-        "stock": 50
+        "importe": 5200,
+        "stock": 110
     },
     {
         "id": 12,
         "imagen": "🍇",
         "nombre": "Uva",
-        "importe": 700,
-        "stock": 450
+        "importe": 6200,
+        "stock": 400
     },
     {
         "id": 13,
         "imagen": "🍐",
         "nombre": "Pera",
-        "importe": 320,
-        "stock": 880
+        "importe": 2800,
+        "stock": 950
     },
     {
         "id": 14,
         "imagen": "🍒",
         "nombre": "Cereza",
-        "importe": 1100,
-        "stock": 50
+        "importe": 14500,
+        "stock": 30
     },
     {
         "id": 15,
         "imagen": "🍓",
         "nombre": "Frutilla",
-        "importe": 600,
-        "stock": 200
+        "importe": 8800,
+        "stock": 220
     },
     {
         "id": 16,
         "imagen": "🍋",
         "nombre": "Limón",
-        "importe": 260,
-        "stock": 590
+        "importe": 1900,
+        "stock": 2100
     },
     {
         "id": 17,
         "imagen": "🍎",
         "nombre": "Manzana Roja",
-        "importe": 470,
-        "stock": 220
+        "importe": 3500,
+        "stock": 1100
     },
     {
         "id": 18,
         "imagen": "🥑",
         "nombre": "Palta",
-        "importe": 650,
-        "stock": 1500
+        "importe": 11000,
+        "stock": 450
     },
     {
         "id": 19,
         "imagen": "🍊",
         "nombre": "Naranja",
-        "importe": 300,
-        "stock": 510
+        "importe": 2400,
+        "stock": 3200
     },
     {
         "id": 20,

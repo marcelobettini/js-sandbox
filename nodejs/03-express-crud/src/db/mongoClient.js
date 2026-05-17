@@ -24,3 +24,13 @@ export function getDb() {
   if (!db) throw new Error('DB no inicializada. Llamá a connectDB() primero.');
   return db;
 }
+
+/*
+Por qué no exportamos también una función disconnectDB() para cerrar la conexión al apagar el servidor?
+
+La razón es arquitectónica y se basa en el ciclo de vida del proceso:
+
+En un servidor HTTP la conexión debe vivir tanto como el proceso. connectDB() se llama una vez al arrancar, antes de app.listen(), y desde ese momento la conexión está disponible para todas las requests durante toda la vida del servidor. Desconectarse deliberadamente en medio de eso no tiene sentido — sería como apagar el motor mientras el auto está en ruta.
+
+El gestor de conexiones de MongoDB ya maneja el pool internamente. MongoClient mantiene un connection pool (por defecto 5 conexiones concurrentes). El driver se encarga de abrir, reusar y cerrar conexiones individuales del pool según la carga. No es necesario administrar eso manualmente.
+*/

@@ -26,8 +26,8 @@ export async function getAll({ completed, search } = {}) {
   }
 
   if (search) {
-    // Escapar caracteres especiales antes de construir el RegExp para evitar ReDoS:
-    // un valor como "(a+)+" sin escapar puede colgar el proceso con backtracking catastrófico.
+    //* Escapar caracteres especiales antes de construir el RegExp para evitar ReDoS: escaped sirve para neutralizar cualquier metacaracter que el usuario haya incluido en la búsqueda, tratándolo como texto literal. La primera parte de la expresión regular /[.*+?^${}()|[\]\\]/g busca cualquier carácter que tenga un significado especial en las expresiones regulares (como ., *, +, ?, etc.). La función replace los reemplaza por su versión escapada (precedida por una barra invertida \), lo que asegura que se traten como caracteres literales en lugar de operadores de regex. Esto es crucial para prevenir ataques de ReDoS, donde un atacante podría intentar explotar patrones de regex mal diseñados para causar un consumo excesivo de recursos.
+
     const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(escaped, 'i');
     query.$or = [{ title: regex }, { description: regex }];

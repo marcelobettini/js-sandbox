@@ -2,6 +2,8 @@
 
 import express from 'express';
 import tasksRouter from './routes/tasks.js';
+import healthRouter from './routes/health.js';
+import { connectDB } from './db/mongoClient.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +33,8 @@ app.get(API_PREFIX, (req, res) => {
 // Monta el router de tareas bajo el prefijo /api/v1
 app.use(`${API_PREFIX}/tasks`, tasksRouter);
 
+app.use('/health', healthRouter);
+
 // 404 — rutas no definidas
 app.use((req, res, next) => {
   const error = new Error('Route not found');
@@ -53,6 +57,17 @@ app.use((err, req, res, next) => {
   res.status(status).json({ error: message });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Conectar a MongoDB antes de abrir el puerto.
+// Si la conexión falla no tiene sentido arrancar el servidor — process.exit(1)
+// asegura un fallo rápido y visible en lugar de quedar en estado roto silencioso.
+async function main() {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+main().catch((err) => {
+  console.error('Error al iniciar el servidor:', err);
+  process.exit(1);
 });

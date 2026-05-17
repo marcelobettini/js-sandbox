@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "mongodb-schema-design": {
+      "source": "mongodb/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mongodb-schema-design/SKILL.md",
+      "computedHash": "46d658eaab2b13e9b8e571b5b084ae62cc9b3866bbbd98d23e4b9af9c1c26626"
+    },
     "nodejs-backend-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",

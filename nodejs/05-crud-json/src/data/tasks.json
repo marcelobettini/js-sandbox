@@ -1,0 +1,56 @@
+[
+  {
+    "id": "d11406b4-9c8e-4fc4-8cb6-dee2eb9e9967",
+    "title": "Esto arranca o lo programé con las patas????",
+    "description": "Repasar middlewares y routers",
+    "priority": "high",
+    "completed": false,
+    "createdAt": "2026-05-06T17:54:45.136Z",
+    "updatedAt": "2026-05-13T23:47:57.541Z"
+  },
+  {
+    "id": "4c42e33c-0588-4571-87cd-b619286b7198",
+    "title": "Probamos el método POST",
+    "description": "Aprender a usar Postman y ver si se graba el archivo y se sincroniza con el arreglo de estado",
+    "priority": "low",
+    "completed": false,
+    "createdAt": "2026-05-12T00:02:44.001Z",
+    "updatedAt": "2026-05-12T00:02:44.001Z"
+  },
+  {
+    "id": "658ad54f-e772-4d07-96e2-c0391b5c586a",
+    "title": "probar POST",
+    "description": "Chequear que se cree la tarea, que persista en el archivo y que se actualice en memoria",
+    "priority": "high",
+    "completed": false,
+    "createdAt": "2026-05-29T23:47:58.642Z",
+    "updatedAt": "2026-05-29T23:47:58.642Z"
+  },
+  {
+    "id": "69a68d28-5bb7-4459-ba14-bb0ef464e844",
+    "title": "Testing tools",
+    "description": "Hacer pruebas con Thunder Client, extensión para VSC",
+    "priority": "low",
+    "completed": false,
+    "createdAt": "2026-05-29T23:53:48.288Z",
+    "updatedAt": "2026-05-29T23:53:48.288Z"
+  },
+  {
+    "id": "bd4679c6-cd11-4e39-8946-f0d35a459129",
+    "title": "Aprendemos a usar ThunderClient",
+    "description": "",
+    "priority": "low",
+    "completed": false,
+    "createdAt": "2026-06-02T22:48:52.176Z",
+    "updatedAt": "2026-06-02T22:48:52.176Z"
+  },
+  {
+    "id": "ac649220-66d4-414e-909b-2a4adae1ef16",
+    "title": "Insomnia testing",
+    "description": "Instalamos Insmnia en MacOS y hacemos algunas peticiones",
+    "priority": "high",
+    "completed": false,
+    "createdAt": "2026-06-02T22:57:17.525Z",
+    "updatedAt": "2026-06-02T22:57:17.525Z"
+  }
+]

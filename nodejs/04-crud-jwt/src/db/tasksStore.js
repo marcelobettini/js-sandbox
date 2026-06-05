@@ -1,6 +1,4 @@
-// Capa de acceso a datos: reemplaza fileStore.js.
-// Misma interfaz pública que fileStore, pero todas las operaciones son async
-// y delegan en MongoDB en lugar de un archivo JSON local.
+// Capa de acceso a datos para la colección tasks.
 
 import { getDb } from './mongoClient.js';
 

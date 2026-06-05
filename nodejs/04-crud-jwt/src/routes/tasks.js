@@ -2,7 +2,8 @@
 
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { getAll, getById, add, update, remove } from '../db/mongoStore.js';
+import { getAll, getById, add, update, remove } from '../db/tasksStore.js';
+import { verifyToken } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.get('/', async (req, res, next) => {
 // Invierte el campo completed sin requerir body.
 // IMPORTANTE: debe declararse antes de PATCH /:id porque Express evalúa rutas
 // en orden de declaración y /:id capturaría '/uuid/toggle' si va primero.
-router.patch('/:id/toggle', async (req, res, next) => {
+router.patch('/:id/toggle', verifyToken, async (req, res, next) => {
   try {
     const task = await getById(req.params.id);
     if (!task) return res.status(404).json({ error: 'Task not found' });
@@ -59,7 +60,8 @@ router.get('/:id', async (req, res, next) => {
 // ─── POST /api/v1/tasks ───────────────────────────────────────────────────────
 // Crea una tarea nueva. Campos requeridos: title.
 // Campos opcionales con defaults: description (''), priority ('low'), completed (false).
-router.post('/', async (req, res, next) => {
+// authorId se toma del payload del JWT (req.user.sub).
+router.post('/', verifyToken, async (req, res, next) => {
   try {
     const { title, description = '', priority = 'low' } = req.body;
 
@@ -80,6 +82,7 @@ router.post('/', async (req, res, next) => {
       description,
       priority,
       completed: false,
+      authorId: req.user.sub,
       createdAt: now,
       updatedAt: now,
     };
@@ -94,7 +97,7 @@ router.post('/', async (req, res, next) => {
 // ─── PATCH /api/v1/tasks/:id ──────────────────────────────────────────────────
 // Actualización parcial: solo se modifican los campos presentes en el body.
 // id, createdAt no son actualizables. updatedAt se renueva automáticamente.
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', verifyToken, async (req, res, next) => {
   try {
     const task = await getById(req.params.id);
     if (!task) return res.status(404).json({ error: 'Task not found' });
@@ -124,7 +127,7 @@ router.patch('/:id', async (req, res, next) => {
 // ─── DELETE /api/v1/tasks/:id ─────────────────────────────────────────────────
 // 204 No Content es la respuesta estándar REST para un DELETE exitoso:
 // la operación fue exitosa y no hay cuerpo que devolver.
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', verifyToken, async (req, res, next) => {
   try {
     const removed = await remove(req.params.id);
     if (!removed) return res.status(404).json({ error: 'Task not found' });

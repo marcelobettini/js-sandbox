@@ -4,64 +4,76 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Educational REST API — Todo App CRUD built with Node.js and Express. Full requirements are in `specs.md`.
-
-## Stack
-
-- **Runtime**: Node.js with ES6+ (import instead of require)
-- **Framework**: Express.js v5
-- **Persistence**: JSON file (no database)
-- **UUID generation**: Node.js native `crypto.randomUUID()`
+Educational Todo REST API built with Node.js (ESM), Express 5, and MongoDB Atlas. Implements CRUD + JWT auth as a learning project. The goal is simplicity without anti-patterns; comments explain the *why* behind decisions.
 
 ## Commands
 
 ```bash
-npm run dev    # node --watch (auto-restart on file change)
-npm start      # production start, no watch
+npm run dev    # node --watch with .env loaded — use during development
+npm start      # production start, no hot reload
 ```
 
-No test runner or linter configured.
+No test runner is configured. Manual testing via curl or an HTTP client (Postman, etc.) against `http://localhost:3000`.
+
+## Environment
+
+Requires a `.env` file at the project root with:
+
+```
+MONGODB_URI=<MongoDB Atlas connection string>
+JWT_SECRET=<minimum 32 characters>
+JWT_REFRESH_SECRET=<minimum 32 characters, different from JWT_SECRET>
+NODE_ENV=development   # set to "production" to enable secure cookies
+```
 
 ## Architecture
 
+**Entry point** (`src/index.js`): connects to MongoDB, creates the `users.email` unique index, then starts the HTTP server. Fail-fast: `process.exit(1)` if any step fails.
+
+**Layers:**
+
 ```
 src/
-  index.js          # Express app setup, global middleware, 404/error handlers, listen
+  index.js          # Express setup, global error handler, startup sequence
+  middleware/
+    auth.js         # verifyToken — reads Bearer token, attaches payload to req.user
   routes/
-    tasks.js        # all task endpoints; imports fileStore directly (no controller layer)
+    tasks.js        # CRUD endpoints under /api/v1/tasks
+    auth.js         # register, login, refresh, logout under /api/v1/auth
+    health.js       # GET /health — pings MongoDB, returns 200/503
   db/
-    fileStore.js    # in-memory array backed by JSON file; auto-loads on import
-  data/
-    tasks.json      # persistence file; created empty on first run if missing
+    mongoClient.js  # Singleton MongoClient + connectDB() / getDb()
+    tasksStore.js   # Data access for tasks (toTask() maps _id → id)
+    usersStore.js   # Data access for users + ensureIndexes()
 ```
 
-**Request flow**: `index.js` → mounts `tasksRouter` at `/api/v1/tasks` → route handlers call `fileStore` functions directly.
+**Request flow (authenticated):** `routes/tasks.js` → `middleware/auth.js` → `db/mongoStore.js` → `db/mongoClient.js`
 
-### fileStore API
+**Request flow (auth routes):** `routes/auth.js` → `db/usersStore.js` → `db/mongoClient.js`
 
-```js
-getAll()          // returns in-memory tasks array
-getById(id)       // returns task or null
-add(task)         // pushes and persists
-update(id, fields) // merges fields, persists, returns updated task or null
-remove(id)        // splices and persists, returns boolean
-```
+**Key conventions:**
 
-`load()` is called automatically at the bottom of `fileStore.js` when the module is imported. Every mutating function calls `persist()` (save → load) to keep memory and file in sync.
+- MongoDB stores documents with `_id`; `toTask()` in `mongoStore.js` remaps it to `id` before returning — the rest of the app never sees `_id`. Users are handled the same way in auth routes.
+- IDs are UUIDs from Node's native `crypto.randomUUID()`.
+- `PATCH /:id/toggle` must be declared **before** `PATCH /:id` — Express matches in declaration order.
+- All errors go to the global error handler via `next(err)`, except `/health` (always responds directly for load balancer compatibility).
+- 5xx handler does not expose `err.message` to the client.
+- User search input is regex-escaped before building a MongoDB `$regex` query (ReDoS prevention).
 
-### ESM `__dirname` pattern
+## Auth design
 
-`fileStore.js` reconstructs `__dirname` because it does not exist in ES Modules:
+- **Access token**: 15 min, signed with `JWT_SECRET`, sent in response body.
+- **Refresh token**: 7 days, signed with `JWT_REFRESH_SECRET`, sent as `httpOnly` cookie (invisible to client JS).
+- **Rotation**: every `POST /auth/refresh` issues a new refresh token and a new access token.
+- **Logout**: clears the cookie server-side; access token remains valid until its 15-min TTL (stateless trade-off).
+- **Timing attack prevention**: `/login` always calls `bcrypt.compare` even when the user is not found (uses a module-level `DUMMY_HASH` generated at startup).
+- **Protected routes**: `POST`, `PATCH`, `DELETE` on `/tasks` require a valid Bearer token. `GET` routes are public.
+- **`authorId`**: set automatically from `req.user.sub` when creating a task; no ownership enforcement on update/delete.
 
-```js
-const __dirname = dirname(fileURLToPath(import.meta.url));
-```
+## Rules (from specs.md)
 
-## Key rules
-
-- **Use the `nodejs-backend-patterns` skill** for any backend implementation work.
-- **Comment the code** — this is an educational project; explain the why where useful. Comments are in Spanish.
-- **Prefer native Node.js modules** (`fs`, `crypto`, `path`) over external packages.
-- **Task model**: `id` (uuid), `title`, `description`, `priority` (low/mid/high), `completed` (boolean, default `false`), `createdAt` (ISO timestamp), `updatedAt` (same as `createdAt` on creation).
-- **Route ordering**: in `tasks.js`, always declare `/:id/toggle` **before** `/:id` — Express matches routes top-to-bottom and `/:id` would swallow `/toggle` otherwise.
-- **Query filters on GET /tasks**: `?completed=true|false` and `?search=keyword` (title or description).
+- Simpler is better, but never at the cost of anti-patterns
+- Prefer native Node.js modules over external packages when possible
+- Document with comments explaining *why*, not *what*
+- Follow REST API standards
+- Use ESM (`import`/`export`) — this is `"type": "module"` project

@@ -1,16 +1,18 @@
 // Punto de entrada: configura Express y arranca el servidor.
 
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import tasksRouter from './routes/tasks.js';
+import authRouter from './routes/auth.js';
 import healthRouter from './routes/health.js';
 import { connectDB } from './db/mongoClient.js';
+import { ensureIndexes } from './db/usersStore.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Parsea el body de las requests como JSON
-
 app.use(express.json());
+app.use(cookieParser());
 
 const API_PREFIX = '/api/v1';
 
@@ -22,17 +24,20 @@ app.get(API_PREFIX, (req, res) => {
     endpoints: {
       [`GET    ${API_PREFIX}/tasks`]: 'Lista todas las tareas (filtra con ?completed=true|false o ?search=keyword)',
       [`GET    ${API_PREFIX}/tasks/:id`]: 'Obtiene una tarea por id',
-      [`POST   ${API_PREFIX}/tasks`]: 'Crea una nueva tarea',
-      [`PATCH  ${API_PREFIX}/tasks/:id`]: 'Actualiza una tarea parcialmente',
-      [`PATCH  ${API_PREFIX}/tasks/:id/toggle`]: 'Invierte el estado completed de una tarea',
-      [`DELETE ${API_PREFIX}/tasks/:id`]: 'Elimina una tarea',
+      [`POST   ${API_PREFIX}/tasks`]: 'Crea una nueva tarea [auth requerida]',
+      [`PATCH  ${API_PREFIX}/tasks/:id`]: 'Actualiza una tarea parcialmente [auth requerida]',
+      [`PATCH  ${API_PREFIX}/tasks/:id/toggle`]: 'Invierte el estado completed de una tarea [auth requerida]',
+      [`DELETE ${API_PREFIX}/tasks/:id`]: 'Elimina una tarea [auth requerida]',
+      [`POST   ${API_PREFIX}/auth/register`]: 'Registra un usuario nuevo',
+      [`POST   ${API_PREFIX}/auth/login`]: 'Inicia sesión, devuelve access token',
+      [`POST   ${API_PREFIX}/auth/refresh`]: 'Rota el refresh token y emite un nuevo access token',
+      [`POST   ${API_PREFIX}/auth/logout`]: 'Cierra sesión (limpia la cookie del refresh token)',
     },
   });
 });
 
-// Monta el router de tareas bajo el prefijo /api/v1
 app.use(`${API_PREFIX}/tasks`, tasksRouter);
-
+app.use(`${API_PREFIX}/auth`, authRouter);
 app.use('/health', healthRouter);
 
 // 404 — rutas no definidas
@@ -62,6 +67,7 @@ app.use((err, req, res, next) => {
 // asegura un fallo rápido y visible en lugar de quedar en estado roto silencioso.
 async function main() {
   await connectDB();
+  await ensureIndexes(); // índice único sobre users.email
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });

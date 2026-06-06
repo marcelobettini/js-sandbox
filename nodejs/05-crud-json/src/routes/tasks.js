@@ -8,7 +8,9 @@ const VALID_PRIORITIES = ['low', 'mid', 'high'];
 // GET /api/v1/tasks
 // Devuelve todas las tareas. Si no hay ninguna, responde 404.
 router.get("/", (req, res, next) => {
+
     const tareas = getAllTasks();
+
     if (tareas.length === 0) {
         const error = new Error("No se encontraron tareas");
         error.status = 404;
@@ -35,6 +37,7 @@ router.get("/:id", (req, res, next) => {
     }
 });
 
+
 // POST /api/v1/tasks
 // Crea una nueva tarea. El id, completed, createdAt y updatedAt los genera el servidor.
 router.post("/", (req, res, next) => {
@@ -42,7 +45,7 @@ router.post("/", (req, res, next) => {
     const { title, description = "", priority = "low" } = req.body;
 
     // Validación: title es obligatorio
-    if (!title) {
+    if (!title.trim()) {
         const error = new Error("El campo 'title' es obligatorio");
         error.status = 400; // 400 Bad Request = el cliente mandó datos inválidos
         return next(error);
@@ -66,6 +69,7 @@ router.post("/", (req, res, next) => {
         updatedAt: now
     };
 
+
     add(task);
     res.status(201).json(task); // 201 Created = se creó un nuevo recurso exitosamente
 });
@@ -74,31 +78,7 @@ router.post("/", (req, res, next) => {
 // Reemplaza TODA la tarea con los datos que lleguen en el body.
 // Semántica REST: PUT es "reemplazo total", por eso todos los campos tienen que venir
 // y completed se resetea a false (el cliente no puede enviarlo).
-router.put("/:id", (req, res, next) => {
-    const { id } = req.params;
-    const { title, description = "", priority = "low" } = req.body;
 
-    if (!title) {
-        const error = new Error("El campo 'title' es obligatorio");
-        error.status = 400;
-        return next(error);
-    }
-    if (!VALID_PRIORITIES.includes(priority)) {
-        const error = new Error("El campo prioridad debe contener 'low' | 'mid' | 'high'");
-        error.status = 400;
-        return next(error);
-    }
-
-    // update() devuelve null si no encontró la tarea con ese id
-    const updated = update(id, { title, description, priority, completed: false });
-    if (!updated) {
-        const error = new Error("Tarea no encontrada");
-        error.status = 404;
-        return next(error);
-    }
-
-    res.json(updated);
-});
 
 // PATCH /api/v1/tasks/:id
 // Actualiza SOLO los campos que lleguen en el body, sin tocar el resto.
@@ -107,7 +87,7 @@ router.patch("/:id", (req, res, next) => {
     const { id } = req.params;
 
     // Desestructuramos sin valores por defecto: si el cliente no manda un campo, queda undefined
-    const { title, description, priority, completed } = req.body;
+    const { title, description, priority } = req.body;
 
     // Solo validamos priority si el cliente la envió (no queremos rechazar un patch que no la incluye)
     if (priority !== undefined && !VALID_PRIORITIES.includes(priority)) {
@@ -119,10 +99,10 @@ router.patch("/:id", (req, res, next) => {
     // Armamos un objeto solo con los campos que realmente llegaron en el body
     // Si metiéramos campos undefined en el merge, pisaríamos los valores existentes con undefined
     const fields = {};
-    if (title !== undefined) fields.title = title;
+
+    if (title) fields.title = title;
     if (description !== undefined) fields.description = description;
     if (priority !== undefined) fields.priority = priority;
-    if (completed !== undefined) fields.completed = completed;
 
     const updated = update(id, fields);
     if (!updated) {
@@ -148,4 +128,15 @@ router.delete("/:id", (req, res, next) => {
     res.status(204).send();
 });
 
+router.patch("/toggle/:id", (req, res) => {
+    const task = getById(req.params.id);
+    console.log(task);
+    if (task) {
+        const modified = { ...task, completed: !task.completed };
+        console.log(modified);
+    }
+});
+
 export default router;
+
+

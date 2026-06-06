@@ -68,7 +68,8 @@ function update(id, data) {
     // findIndex devuelve -1 si no encuentra ningún elemento
     if (index === -1) return null;
 
-    tasks[index] = { ...tasks[index], ...data, id, updatedAt: new Date() };
+    tasks[index] = { ...tasks[index], ...data, updatedAt: new Date() };
+
     save();
     return tasks[index];
 }

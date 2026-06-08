@@ -29,11 +29,14 @@ Express 5 REST API using ES Modules (`"type": "module"`). API is versioned under
 - `src/services/taskService.js` — MongoDB CRUD service. All functions are async. MongoDB generates `_id` (ObjectId); a `fmt()` helper renames it to `id` in every response (the native driver has no transform layer like Mongoose). `toggle` uses an aggregation pipeline update for an atomic flip of `completed`.
 - `src/db/mongoClient.js` — MongoDB singleton (connect once at startup, expose `getDB()`). Used by both `taskService.js` and the health check.
 - `src/services/fileStore.js` — legacy JSON file store, no longer wired up.
+- `src/docs/openapi.js` — OpenAPI 3.0 spec (central object). Consumed by `swagger-ui-express` to render the interactive docs at `/api/v1` and exposed as raw JSON at `/api/v1/openapi.json`.
 
 **Request flow**
 ```
-src/index.js  →  /api/v1/tasks  →  src/routes/tasks.js  →  src/services/taskService.js  →  MongoDB
-               →  /health        →  src/routes/health.js  →  src/db/mongoClient.js        →  MongoDB
+src/index.js  →  /api/v1/tasks       →  src/routes/tasks.js  →  src/services/taskService.js  →  MongoDB
+               →  /api/v1            →  swagger-ui-express   →  src/docs/openapi.js
+               →  /api/v1/openapi.json → src/docs/openapi.js
+               →  /health            →  src/routes/health.js  →  src/db/mongoClient.js        →  MongoDB
 ```
 
 **Task schema**: `{ id (ObjectId string), title, description, priority ("low"|"mid"|"high"), completed (bool), createdAt, updatedAt }`

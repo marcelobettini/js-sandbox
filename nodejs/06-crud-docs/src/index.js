@@ -1,8 +1,10 @@
 // Entry point: Configuramos Express y arrancamos el server
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import tasksRouter from './routes/tasks.js';
 import healthRouter from "./routes/health.js";
 import { connectDB } from './db/mongoClient.js';
+import openapiSpec from './docs/openapi.js';
 const app = express();
 const PORT = process.env.PORT || 3001;
 app.disable("x-powered-by");
@@ -12,32 +14,16 @@ app.disable("x-powered-by");
 app.use(express.json());
 
 
-//versionado de la API
-//miapi.com/ -> documentación
-//miapi.com/api/v1
-//miapi.com/api/v2
-
 const API_PREFIX = '/api/v1';
-
-//Ruta raíz: info de la API
-
-app.get(API_PREFIX, (req, res) => {
-    res.json({
-        name: 'Todo API',
-        version: '0.0.1',
-        endpoints: {
-            [`GET    ${API_PREFIX}/tasks`]: 'Lista todas las tareas (filtra con ?completed=true|false o ?search=keyword)',
-            [`GET    ${API_PREFIX}/tasks/:id`]: 'Obtiene una tarea por id',
-            [`POST   ${API_PREFIX}/tasks`]: 'Crea una nueva tarea',
-            [`PATCH  ${API_PREFIX}/tasks/:id`]: 'Actualiza una tarea parcialmente',
-            [`PATCH  ${API_PREFIX}/tasks/:id/toggle`]: 'Invierte el estado completed de una tarea',
-            [`DELETE ${API_PREFIX}/tasks/:id`]: 'Elimina una tarea',
-        }
-    });
-});
 
 // Montamos el router de tareas bajo el prefijo /api/v1/tasks
 app.use(`${API_PREFIX}/tasks`, tasksRouter);
+
+// Spec JSON crudo (útil para clientes externos)
+app.get(`${API_PREFIX}/openapi.json`, (req, res) => res.json(openapiSpec));
+
+// Swagger UI en /api/v1 — montado después de /tasks para que Express resuelva primero la ruta más específica
+app.use(API_PREFIX, swaggerUi.serve, swaggerUi.setup(openapiSpec));
 
 app.use("/health", healthRouter);
 

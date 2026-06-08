@@ -3,6 +3,7 @@
 - deberás crear un ejemplo de uso de cada uno de los métodos GET - POST -PATCH - DELETE
 - incluye un ejemplo de código del cuerpo del mensaje para los métodos POST - PATCH
 - incluye un ejemplo del archivo .env para explicar cómo definir la conexión a MongoDB
+- incluye el endpoint del healtch check
 
 
 ### debes integrar en la creación de esta documentación:

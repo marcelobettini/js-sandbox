@@ -1,7 +1,6 @@
 // Router de tareas: define todos los endpoints del CRUD.
 
 import { Router } from 'express';
-import { randomUUID } from 'crypto';
 import { getAll, getById, add, update, remove } from '../db/mongoStore.js';
 
 const router = Router();
@@ -75,7 +74,6 @@ router.post('/', async (req, res, next) => {
 
     const now = new Date().toISOString();
     const task = {
-      id: randomUUID(),
       title,
       description,
       priority,
@@ -84,8 +82,8 @@ router.post('/', async (req, res, next) => {
       updatedAt: now,
     };
 
-    await add(task);
-    res.status(201).json(task);
+    const created = await add(task);
+    res.status(201).json(created);
   } catch (err) {
     next(err);
   }

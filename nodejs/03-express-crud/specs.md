@@ -1,6 +1,6 @@
 # Descripción base: API de ejemplo con un CRUD al estilo ToDo App.
 ## Stack: Node JS con JavaScript ES6+ y la biblioteca Express JS.
-## Persistencia: Archivo JSON.
+## Persistencia: MongoDB Atlas (driver nativo, sin Mongoose).
 
 ### CRUD:
 1. Se lee el archivo con datos y se carga en memoria.
@@ -27,13 +27,6 @@
 
 ---
 
-**Protocolo para el manejo del archivo JSON:**
-
-- Crear un módulo independiente.
-- Abrir el archivo y guardar en memoria.
-- Cada operación POST, PATCH o DELETE sobrescribe el archivo JSON y vuelve a cargarlo en memoria para que los datos estén actualizados y sincronizados.
-- Manejo de errores para evitar inconsistencias.
-  
 **Reglas generales:**
 
 - Utiliza la skill instalada para este proyecto.
